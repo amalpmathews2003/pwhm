@@ -538,6 +538,10 @@ void wld_hostapd_cfgFile_setRadioConfig(T_Radio* pRad, swl_mapChar_t* radConfigM
         swl_mapCharFmt_addValInt32(radConfigMap, "mbssid", (mbssidAdsMode == MBSSID_ADVERTISEMENT_MODE_ENHANCED) ? 2 : 1);
     }
 
+    if(pRad->staticPuncturingEnable) {
+        swl_mapCharFmt_addValStr(radConfigMap, "punct_bitmap", "%X", pRad->disabledSubchannelBitmap);
+    }
+
     pRad->pFA->mfn_wrad_updateConfigMap(pRad, radConfigMap);
 
     if(!configMbssid) {
