@@ -66,6 +66,7 @@
 
 #define DIAG_SCAN_REASON "NeighboringDiag"
 #define FULL_SCAN_REASON "FullScan"
+#define TEN_POW_6        1000000.0
 
 typedef struct {
     swl_function_deferredInfo_t callInfo;
@@ -632,6 +633,47 @@ static void s_prepareSpectrumOutputWithChanFilter(T_Radio* pR, amxc_var_t* pOutV
     }
 }
 
+static bool s_updateChanSurveyReport(T_Radio* pR) {
+    if(pR->pFA->mfn_wrad_updatechansurveyreport(pR) < 0) {
+        SAH_TRACEZ_ERROR(ME, "Unable to update Channel survey report");
+        return false;
+    }
+    return true;
+}
+
+static bool s_getChanSurveyReport(T_Radio* pR, amxc_var_t* retval) {
+    ASSERT_NOT_NULL(pR, , ME, "NULL");
+    ASSERT_NOT_NULL(retval, , ME, "NULL");
+
+    wld_surveyReport_t res;
+    amxc_llist_init(&res.surveyReport);
+
+    if(pR->pFA->mfn_wrad_getchansurveyreport(pR, &res) < 0) {
+        SAH_TRACEZ_ERROR(ME, "Unable to retrieve channel survey report");
+        return false;
+    }
+
+    amxc_var_set_type(retval, AMXC_VAR_ID_LIST);
+    amxc_llist_for_each(it, &res.surveyReport) {
+        wld_chanSurveyReportEntry_t* report = amxc_llist_it_get_data(it, wld_chanSurveyReportEntry_t, it);
+
+        amxc_var_t* pEntry = amxc_var_add(amxc_htable_t, retval, NULL);
+        if(pEntry == NULL) {
+            break;
+        }
+
+        swl_chanspec_t chanSpec = SWL_CHANSPEC_EMPTY;
+        swl_chanspec_channelFromMHz(&chanSpec, report->frequencyMHz);
+        amxc_var_add_key(int32_t, pEntry, "channel", chanSpec.channel);
+        // The interference factor is a float value between 0 and 1.
+        // For easy computation converting this factor to int by multiplying with 10^6.
+        amxc_var_add_key(int32_t, pEntry, "interferenceFactor", (int32_t) (report->interferenceFactor * TEN_POW_6));
+        SAH_TRACEZ_INFO(ME, "chanSurveyReport frequencyMHz %d channel %d interferenceFactor %f", report->frequencyMHz, chanSpec.channel, report->interferenceFactor);
+    }
+    wld_cleanupSurveyReport(&res);
+    return true;
+}
+
 static void s_prepareSpectrumOutput(T_Radio* pR, amxc_var_t* pOutVar) {
     return s_prepareSpectrumOutputWithChanFilter(pR, pOutVar, NULL, 0);
 }
@@ -696,6 +738,19 @@ amxd_status_t _getScanCombinedData(amxd_object_t* object,
     amxc_var_t* varSpectrum = amxc_var_add_key(amxc_htable_t, retval, "Spectrum", NULL);
     s_prepareSpectrumOutputWithChanFilter(pR, varSpectrum, pScanArgs->chanlist, pScanArgs->chanCount);
 
+    return amxd_status_ok;
+}
+
+amxd_status_t _getChanSurveyReport(amxd_object_t* object,
+                                   amxd_function_t* func _UNUSED,
+                                   amxc_var_t* args _UNUSED,
+                                   amxc_var_t* retval) {
+    T_Radio* pR = wld_rad_fromObj(object);
+    ASSERT_NOT_NULL(pR, amxd_status_unknown_error, ME, "NULL");
+
+    if(!s_getChanSurveyReport(pR, retval)) {
+        return amxd_status_unknown_error;
+    }
     return amxd_status_ok;
 }
 
@@ -1257,6 +1312,14 @@ void wld_scan_cleanupScanResults(wld_scanResults_t* res) {
     }
 }
 
+void wld_cleanupSurveyReport(wld_surveyReport_t* res) {
+    ASSERTS_NOT_NULL(res, , ME, "NULL");
+    amxc_llist_for_each(it, &res->surveyReport) {
+        wld_chanSurveyReportEntry_t* report = amxc_container_of(it, wld_chanSurveyReportEntry_t, it);
+        amxc_llist_it_take(&report->it);
+        free(report);
+    }
+}
 /**
  * Request to update the scan results in the datamodel.
  * This will remove the currently stored scan results, and replace the with the results from the latest scan.
@@ -1341,6 +1404,10 @@ void wld_scan_done(T_Radio* pR, bool success) {
     wld_rad_scan_SendDoneNotification(pR, success);
     if(swl_function_deferIsActive(&pR->scanState.scanFunInfo)) {
         wld_rad_scan_FinishScanCall(pR, &success);
+    }
+
+    if(pR->scanState.scanType == SCAN_TYPE_SSID) {
+        s_updateChanSurveyReport(pR);
     }
 
     /* Scan is done */
